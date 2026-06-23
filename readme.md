@@ -1,4 +1,4 @@
-Game of Life
-============
+UI Examples
+===========
 
-A basic implementation of the Game of Life. Tested on ESP-32 C3 with a SSD1306 monochrome OLED screen.
+Some simple examples of how to use the rb.ui module. 
