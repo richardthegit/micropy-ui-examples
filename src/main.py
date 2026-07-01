@@ -7,19 +7,24 @@ from rb.dev.display import Display
 from rb.ui.menu import MenuItem, Menu
 from rb.ui.nav import NavBtns
 
+from clock_screen import ClockScreen
 from led_menu import LEDMenu
 from life_screen import LifeScreen
 from wifi_menu import WifiMenu
 
 wifi = Wifi()
-wifi.on(connect = False)
+if wifi.on():
+    wifi.ntp()
+
 display = Display()
 btns = NavBtns(9, 8, 7, 6)
+clock = ClockScreen(display, btns, lambda: to_top())
 life = LifeScreen(display, btns, lambda: to_top())
 
 top_menu = Menu(display, btns, None, [
     MenuItem('Scroll Test', lambda: to_sub()),
     MenuItem('Wifi', lambda: to_wifi()),
+    MenuItem('Clock', lambda: to_clock()),
     MenuItem('LED Color', lambda: to_led()),
     MenuItem('Life', lambda: to_life()),
 ])
@@ -43,6 +48,9 @@ def to_top():
 def to_sub():
     sub_menu.enter(True)
 
+def to_clock():
+    clock.enter()
+
 def to_wifi():
     wifi_menu.enter()
 
@@ -59,6 +67,8 @@ async def main():
     while True:
         if btns.listener == life:
             life.step()
+        if btns.listener == clock:
+            clock.step()
 
         await asyncio.sleep(0.01)
 

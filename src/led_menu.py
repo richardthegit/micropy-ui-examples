@@ -4,6 +4,7 @@ from rb.ui.menu import Menu, MenuItem
 
 
 colors = [
+    (0, 0, 0),
     (255, 0, 0),
     (0, 255, 0),
     (0, 0, 255),
@@ -15,6 +16,7 @@ colors = [
 class LEDMenu(Menu):
     def __init__(self, display, btns, back):
         items = [
+            MenuItem('Off'),
             MenuItem('Red'),
             MenuItem('Green'),
             MenuItem('Blue'),
@@ -28,5 +30,4 @@ class LEDMenu(Menu):
         self.led.set(colors[0])
 
     def selection_changed(self):
-        print(f'{colors[self.selection]}')
         self.led.set(colors[self.selection])
