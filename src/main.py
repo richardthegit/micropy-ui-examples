@@ -1,6 +1,6 @@
 import asyncio, machine
 
-from rb.core import Rebooter
+from rb.core import Rebooter, ScreenContext
 from rb.core.store import store
 from rb.core.wifi import Wifi
 from rb.dev.display import Display
@@ -12,11 +12,15 @@ from led_menu import LEDMenu
 from life_screen import LifeScreen
 from wifi_menu import WifiMenu
 
+display = Display()
+
+with ScreenContext(display.fb):
+    display.text('Startup...', 0, 0)
+
 wifi = Wifi()
 if wifi.on():
     wifi.ntp()
 
-display = Display()
 btns = NavBtns(9, 8, 7, 6)
 clock = ClockScreen(display, btns, lambda: to_top())
 life = LifeScreen(display, btns, lambda: to_top())

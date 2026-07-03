@@ -1,5 +1,6 @@
 import asyncio, time
 from machine import Pin
+from random import randint
 
 from rb.core import ScreenContext
 from rb.core.constants import MONTHS, DAYS
@@ -20,7 +21,6 @@ class ClockScreen:
         self.back = back
 
         self.last_update = 0
-
         self.font_md = ezFBfont(self.fb, ezFBfont_helvR08_latin_13)
         self.font_xl = ezFBfont(self.fb, ezFBfont_helvB24_nums_32)
 
@@ -39,24 +39,38 @@ class ClockScreen:
         else:
             self.fb.contrast(255)
 
-    def layout(self):
-        y = 0
+    def time_tz(self, y, h, m, s, tz):
         right = self.fb.width
+        self.font_xl.write(f'{h:02d}:{m:02d}', 0, y)
+        self.font_md.write(tz, right, y, halign = 'right')
+        self.font_md.write(f'{s:02d}', right, y + 13, halign = 'right')
 
-        # Time
-        year, month, day, h, m, s, weekday, yearday = time.localtime(local_secs())
+    def day_date(self, y, weekday, day, month):
+        right = self.fb.width
+        self.font_md.write(f'{DAYS[weekday]}', 0, y)
+        self.font_md.write(f'{day} {MONTHS[month - 1]}', right, y, halign = 'right')
+
+    def layout(self):
+        secs = local_secs()
+        year, month, day, h, m, s, weekday, yearday = time.localtime(secs)
         tz, offset = get_tz()
         self.set_brightness(h)
 
-        self.font_md.write(f'{DAYS[weekday]}', 0, y)
-        self.font_md.write(tz, right, 0, halign = 'right')
-        y += 20
+        offset = s
+        if offset >= 30:
+            offset = 60 - offset
 
-        self.font_xl.write(f'{h:02d}:{m:02d}:{s:02d}', 0, y)
+        md_h = 13
+        xl_h = 30
 
-        y = self.fb.height
-        self.font_md.write(f'{day} {MONTHS[month - 1]}', right, y, 
-                           halign = 'right', valign = 'bottom')
+        if offset < 15:
+            offset = min(offset, 13)
+            self.time_tz(offset, h, m, s, tz)
+            self.day_date(self.fb.height - offset - md_h, weekday, day, month)
+        else:    
+            offset = min(29 - offset, 10)        
+            self.time_tz(self.fb.height - offset - xl_h, h, m, s, tz)
+            self.day_date(offset, weekday, day, month)
 
     def step(self):
         """
