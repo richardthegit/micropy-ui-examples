@@ -68,16 +68,17 @@ def to_life():
     life.enter()
 
 async def main():
-    to_clock()
+    with Rebooter():
+        to_clock()
 
-    # Keep the main loop alive
-    while True:
-        if btns.listener == life:
-            life.step()
-        if btns.listener == clock:
-            clock.step()
+        # Keep the main loop alive
+        while True:
+            if btns.listener == life:
+                life.step()
+            if btns.listener == clock:
+                clock.step()
 
-        await asyncio.sleep(0.01)
+            await asyncio.sleep(0.01)
 
 if __name__ == '__main__':
     # Run the event loop
