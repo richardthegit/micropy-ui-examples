@@ -1,6 +1,7 @@
 import asyncio, machine
 
-from rb.core import Rebooter, ScreenContext
+from rb.core import ScreenContext
+from rb.core.rebooter import Rebooter, print_last_reboot
 from rb.core.store import store
 from rb.core.wifi import Wifi
 from rb.dev.display import Display
@@ -11,6 +12,8 @@ from clock_screen import ClockScreen
 from led_menu import LEDMenu
 from life_screen import LifeScreen
 from wifi_menu import WifiMenu
+
+print_last_reboot(False)
 
 display = Display()
 
@@ -65,7 +68,7 @@ def to_life():
     life.enter()
 
 async def main():
-    to_top()
+    to_clock()
 
     # Keep the main loop alive
     while True:
